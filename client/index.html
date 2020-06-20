@@ -45,6 +45,7 @@
         <ul id="player-list"></ul>
     </div>
 
+    <audio id="buzz-sound" src="buzzer.mp3" class="hidden"></audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
         integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
@@ -133,6 +134,7 @@
         function buzzSuccess() {
             document.getElementById('buzzer').classList.add('success');
             document.getElementById('buzzer').setAttribute('disabled', 'disabled');
+            document.getElementById('buzz-sound').play();
         }
 
         function freezeMyBuzzer() {

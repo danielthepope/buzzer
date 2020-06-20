@@ -126,7 +126,8 @@ io.on('connection', (socket) => {
             }
         }
         if (sessionData?.isAdmin) {
-            GAMES[sessionData.gameId].broadcast.emit('alert', { message: 'Admin has left' });
+            GAMES[sessionData.gameId].broadcast.emit('game-over', { message: 'Admin has left' });
+            log('Deleted game');
             delete GAMES[sessionData.gameId];
         }
     });

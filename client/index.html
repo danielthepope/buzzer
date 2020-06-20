@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -19,13 +24,16 @@
         <button onclick="createGame()">Create game</button>
     </div>
 
-    <div id="player-view">
+    <p id="game-id-p" class="hidden">Game ID: <span id="game-id-display">-</span></p>
+
+    <div id="player-view" class="hidden">
+        <p>Welcome <span id="player-name-display">-</span></p>
         <h2>Buzzer</h2>
         <button id="buzzer" onclick="buzz()">Buzzer</button>
         <p id="buzz-result">-</p>
     </div>
 
-    <div id="admin-view">
+    <div id="admin-view" class="hidden">
         <h2>Admin view</h2>
         <button onclick="freezeAll()">Freeze all</button>
         <button onclick="resetAll()">Reset all</button>
@@ -51,17 +59,24 @@
                     if (err) {
                         alert(err);
                     } else {
-                        alert(`Joined game ${gameId}`);
-                        setupGameNotifications(gameId);
+                        setupPlayer(gameId);
                     }
                 });
             }
         }
 
-        function setupGameNotifications(gameId) {
+        function setupPlayer(gameId) {
+            document.getElementById('game-id-display').innerText = gameId;
+            document.getElementById('game-id-p').classList.remove('hidden');
+            document.getElementById('player-name-display').innerText = playerName;
+            document.getElementById('player-view').classList.remove('hidden');
+            document.getElementById('setup').classList.add('hidden');
+
             gameSocket = io.connect(`/${gameId}`);
-            gameSocket.on('alert', data => {
+
+            gameSocket.on('game-over', data => {
                 alert(data.message);
+                window.location.reload();
             });
 
             gameSocket.on('buzz', data => {
@@ -109,11 +124,13 @@
             socket.emit('create-game');
         }
 
-        function setupAdminNotifications(gameId) {
+        function setupAdmin(gameId) {
+            document.getElementById('game-id-display').innerText = gameId;
+            document.getElementById('game-id-p').classList.remove('hidden');
+            document.getElementById('admin-view').classList.remove('hidden');
+            document.getElementById('setup').classList.add('hidden');
+
             gameSocket = io.connect(`/${gameId}`);
-            gameSocket.on('alert', data => {
-                alert(data.message);
-            });
 
             gameSocket.on('buzz', data => {
                 document.getElementById('admin-console').innerText = `${data.playerName} has buzzed`;
@@ -134,8 +151,7 @@
         }
 
         socket.on('game-created', data => {
-            alert(`Game ID is ${data.gameId}`);
-            setupAdminNotifications(data.gameId);
+            setupAdmin(data.gameId);
         });
     </script>
 </body>

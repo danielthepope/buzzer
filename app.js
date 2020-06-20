@@ -1,22 +1,17 @@
-const app = require('http').createServer(handler)
-const io = require('socket.io')(app);
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 const fs = require('fs');
 
-app.listen(8080);
+server.listen(8080);
 console.log('App is probably listening on 8080');
 
-function handler(req, res) {
-    fs.readFile(__dirname + '/client/index.html',
-        (err, data) => {
-            if (err) {
-                res.writeHead(500);
-                return res.end('Error loading index.html');
-            }
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/client/index.html');
+});
 
-            res.writeHead(200);
-            res.end(data);
-        });
-}
+app.use(express.static('client'));
 
 class Game {
     gameId; // e.g. '1234'
@@ -100,7 +95,9 @@ io.on('connection', (socket) => {
 
     socket.on('admin-freeze-all', () => {
         if (sessionData.isAdmin) {
-            GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].players });
+            GAMES[sessionData.gameId].frozenPlayers = Array.from(GAMES[sessionData.gameId].players);
+            GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
+            updatePlayerList();
             log('Disabled all buzzers');
         }
     });

@@ -5,40 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        .hidden {
-            display: none;
-        }
-
-        li.frozen {
-            color: grey;
-        }
-
-        li.buzzed {
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
-    <h1>BUZZ</h1>
+    <h1>BUZZ!</h1>
     <div id="setup">
-        <p>Who are you?</p>
-        <input type="text" name="name" id="name-input">
-        <p>Game ID</p>
-        <input type="text" name="gameid" id="gameid-input">
+        <p>
+            <label for="name-input">Who are you?</label>
+            <input type="text" name="name" id="name-input">
+        </p>
+        <p>
+            <label for="gameid-input">Game ID</label>
+            <input type="text" name="gameid" id="gameid-input">
+        </p>
         <button onclick="join()">Join</button>
         <p>Or:</p>
         <button onclick="createGame()">Create game</button>
     </div>
 
-    <p id="game-id-p" class="hidden">Game ID: <span id="game-id-display">-</span></p>
+    <p id="game-id-p" class="hidden">Game ID: <strong id="game-id-display">-</strong></p>
 
     <div id="player-view" class="hidden">
         <p>Welcome <span id="player-name-display">-</span></p>
         <h2>Buzzer</h2>
-        <button id="buzzer" onclick="buzz()">Buzzer</button>
-        <p id="buzz-result">-</p>
+        <div id="buzzer" alt="buzzer" onclick="buzz()"></div>
     </div>
 
     <div id="admin-view" class="hidden">
@@ -134,21 +125,24 @@
         }
 
         function buzz() {
-            socket.emit('buzz');
+            if (!document.getElementById('buzzer').hasAttribute('disabled')) {
+                socket.emit('buzz');
+            }
         }
 
         function buzzSuccess() {
-            freezeMyBuzzer();
-            document.getElementById('buzz-result').innerText = 'DING';
+            document.getElementById('buzzer').classList.add('success');
+            document.getElementById('buzzer').setAttribute('disabled', 'disabled');
         }
 
         function freezeMyBuzzer() {
             document.getElementById('buzzer').setAttribute('disabled', 'disabled');
+            document.getElementById('buzzer').classList.remove('success');
         }
 
         function unfreezeMyBuzzer() {
             document.getElementById('buzzer').removeAttribute('disabled');
-            document.getElementById('buzz-result').innerText = '-';
+            document.getElementById('buzzer').classList.remove('success');
         }
 
         // Admin functions

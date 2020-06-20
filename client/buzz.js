@@ -2,6 +2,10 @@ const socket = io();
 let gameId = null;
 let playerName = null;
 
+const buzzer = document.getElementById('buzzer');
+buzzer.addEventListener('touchstart', e => buzz());
+buzzer.addEventListener('mousedown', e => buzz());
+
 function updatePlayerList(players) {
     const playerList = document.getElementById('player-list');
     playerList.innerHTML = '';

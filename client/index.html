@@ -19,14 +19,17 @@
         <button onclick="createGame()">Create game</button>
     </div>
 
-    <div id="buzzer">
+    <div id="player-view">
         <h2>Buzzer</h2>
-        <button onclick="buzz()">Buzzer</button>
+        <button id="buzzer" onclick="buzz()">Buzzer</button>
         <p id="buzz-result">-</p>
     </div>
 
-    <div id="admin">
+    <div id="admin-view">
         <h2>Admin view</h2>
+        <button onclick="freezeAll()">Freeze all</button>
+        <button onclick="resetAll()">Reset all</button>
+        <button onclick="freezePlayer()">Freeze buzzed player</button>
         <p id="admin-console">-</p>
     </div>
 
@@ -65,8 +68,20 @@
                 if (data.playerName === playerName) {
                     buzzSuccess();
                 } else {
-                    freezeBuzzer();
+                    freezeMyBuzzer();
                 }
+            });
+
+            gameSocket.on('freeze-players', (data) => {
+                if (data.players.includes(playerName)) {
+                    freezeMyBuzzer();
+                } else {
+                    unfreezeMyBuzzer();
+                }
+            });
+
+            gameSocket.on('reset-all', () => {
+                unfreezeMyBuzzer();
             });
         }
 
@@ -75,14 +90,20 @@
         }
 
         function buzzSuccess() {
+            freezeMyBuzzer();
             document.getElementById('buzz-result').innerText = 'DING';
         }
 
-        function freezeBuzzer() {
-            document.getElementById('buzz-result').innerText = 'nope';
+        function freezeMyBuzzer() {
+            document.getElementById('buzzer').setAttribute('disabled', 'disabled');
         }
 
-        // Server functions
+        function unfreezeMyBuzzer() {
+            document.getElementById('buzzer').removeAttribute('disabled');
+            document.getElementById('buzz-result').innerText = '-';
+        }
+
+        // Admin functions
 
         function createGame() {
             socket.emit('create-game');
@@ -97,6 +118,19 @@
             gameSocket.on('buzz', data => {
                 document.getElementById('admin-console').innerText = `${data.playerName} has buzzed`;
             });
+        }
+
+        function freezeAll() {
+            socket.emit('admin-freeze-all');
+        }
+
+        function resetAll() {
+            document.getElementById('admin-console').innerText = '-';
+            socket.emit('admin-reset-all');
+        }
+
+        function freezePlayer() {
+            socket.emit('admin-freeze-player');
         }
 
         socket.on('game-created', data => {

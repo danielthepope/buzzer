@@ -40,8 +40,17 @@ class SessionData {
 const GAMES = {};
 
 io.on('connection', (socket) => {
-    console.log('New connection');
     let sessionData = null;
+
+    function log(message) {
+        if (sessionData?.gameId) {
+            console.log(`[${sessionData.gameId}] ${message}`);
+        } else {
+            console.log(message);
+        }
+    }
+
+    log('New connection');
 
     socket.on('join-request', (data, callback) => {
         if (data.gameId in GAMES) {
@@ -52,7 +61,7 @@ io.on('connection', (socket) => {
                 callback('Player name already in use');
             } else {
                 GAMES[data.gameId].players.push(data.playerName);
-                console.log(`${data.playerName} has joined game ${data.gameId}`);
+                log(`${data.playerName} has joined`);
                 callback(null, sessionData);
             }
         } else {
@@ -65,6 +74,7 @@ io.on('connection', (socket) => {
             if (GAMES[sessionData.gameId].buzzedPlayer === null) {
                 GAMES[sessionData.gameId].buzzedPlayer = sessionData.playerName;
                 GAMES[sessionData.gameId].broadcast.emit('buzz', { playerName: sessionData.playerName });
+                log(`${sessionData.playerName} has buzzed`);
             }
         }
     });
@@ -78,13 +88,37 @@ io.on('connection', (socket) => {
         sessionData.name = 'Admin';
         sessionData.gameId = gameId;
 
-        console.log(`Created game ${gameId}`);
+        log('Game created');
 
         socket.emit('game-created', { gameId: gameId });
     });
 
+    socket.on('admin-freeze-all', () => {
+        if (sessionData.isAdmin) {
+            GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].players });
+        }
+    });
+
+    socket.on('admin-freeze-player', () => {
+        if (sessionData.isAdmin) {
+            GAMES[sessionData.gameId].frozenPlayers.push(GAMES[sessionData.gameId].buzzedPlayer);
+            GAMES[sessionData.gameId].buzzedPlayer = null;
+            GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
+            log(`FROZEN: ${GAMES[sessionData.gameId].frozenPlayers}`);
+        }
+    });
+
+    socket.on('admin-reset-all', () => {
+        if (sessionData.isAdmin) {
+            GAMES[sessionData.gameId].frozenPlayers = [];
+            GAMES[sessionData.gameId].buzzedPlayer = null;
+            GAMES[sessionData.gameId].broadcast.emit('reset-all');
+            log('RESET');
+        }
+    });
+
     socket.on('disconnect', () => {
-        console.log(`${sessionData?.playerName} has left`);
+        log(`${sessionData?.playerName} has left`);
         if (sessionData?.playerName && sessionData?.gameId) {
             if (sessionData.gameId in GAMES && GAMES[sessionData.gameId].players.includes(sessionData.playerName)) {
                 const index = GAMES[sessionData.gameId].players.indexOf(sessionData.playerName);

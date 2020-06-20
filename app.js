@@ -62,7 +62,11 @@ io.on('connection', (socket) => {
             } else {
                 GAMES[data.gameId].players.push(data.playerName);
                 log(`${data.playerName} has joined`);
-                callback(null, sessionData);
+                callback(null, {
+                    playerName: sessionData.playerName,
+                    gameId: sessionData.gameId,
+                    players: updatePlayerList()
+                });
             }
         } else {
             callback('Invalid Game ID');
@@ -74,6 +78,7 @@ io.on('connection', (socket) => {
             if (GAMES[sessionData.gameId].buzzedPlayer === null) {
                 GAMES[sessionData.gameId].buzzedPlayer = sessionData.playerName;
                 GAMES[sessionData.gameId].broadcast.emit('buzz', { playerName: sessionData.playerName });
+                updatePlayerList();
                 log(`${sessionData.playerName} has buzzed`);
             }
         }
@@ -96,6 +101,7 @@ io.on('connection', (socket) => {
     socket.on('admin-freeze-all', () => {
         if (sessionData.isAdmin) {
             GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].players });
+            log('Disabled all buzzers');
         }
     });
 
@@ -104,6 +110,7 @@ io.on('connection', (socket) => {
             GAMES[sessionData.gameId].frozenPlayers.push(GAMES[sessionData.gameId].buzzedPlayer);
             GAMES[sessionData.gameId].buzzedPlayer = null;
             GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
+            updatePlayerList();
             log(`FROZEN: ${GAMES[sessionData.gameId].frozenPlayers}`);
         }
     });
@@ -113,6 +120,7 @@ io.on('connection', (socket) => {
             GAMES[sessionData.gameId].frozenPlayers = [];
             GAMES[sessionData.gameId].buzzedPlayer = null;
             GAMES[sessionData.gameId].broadcast.emit('reset-all');
+            updatePlayerList();
             log('RESET');
         }
     });
@@ -123,6 +131,7 @@ io.on('connection', (socket) => {
             if (sessionData.gameId in GAMES && GAMES[sessionData.gameId].players.includes(sessionData.playerName)) {
                 const index = GAMES[sessionData.gameId].players.indexOf(sessionData.playerName);
                 GAMES[sessionData.gameId].players.splice(index, 1);
+                updatePlayerList();
             }
         }
         if (sessionData?.isAdmin) {
@@ -131,6 +140,29 @@ io.on('connection', (socket) => {
             delete GAMES[sessionData.gameId];
         }
     });
+
+    function updatePlayerList() {
+        const data = GAMES[sessionData.gameId].players.map(playerName => {
+            return {
+                playerName: playerName,
+                isFrozen: GAMES[sessionData.gameId].frozenPlayers.includes(playerName),
+                isBuzzed: GAMES[sessionData.gameId].buzzedPlayer === playerName
+            };
+        });
+        // Sort by Buzzed at top, then those not frozen, then frozen, alphabetically
+        data.sort((a, b) => {
+            if (a.isBuzzed) return -1;
+            if (b.isBuzzed) return 1;
+            if (a.isFrozen && !b.isFrozen) return 1;
+            if (!a.isFrozen && b.isFrozen) return -1;
+            if (a.playerName < b.playerName) return -1;
+            if (a.playerName > b.playerName) return 1;
+            return 0;
+        });
+
+        GAMES[sessionData.gameId].broadcast.emit('players', data);
+        return data;
+    }
 });
 
 function generateGameId() {

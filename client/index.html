@@ -9,6 +9,14 @@
         .hidden {
             display: none;
         }
+
+        li.frozen {
+            color: grey;
+        }
+
+        li.buzzed {
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -41,6 +49,11 @@
         <p id="admin-console">-</p>
     </div>
 
+    <div id="player-list-view" class="hidden">
+        <h2>Players</h2>
+        <ul id="player-list"></ul>
+    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
         integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
@@ -48,6 +61,22 @@
         const socket = io();
         let gameId = null;
         let playerName = null;
+
+        function updatePlayerList(players) {
+            const playerList = document.getElementById('player-list');
+            playerList.innerHTML = '';
+            players.forEach(player => {
+                const element = document.createElement('li');
+                element.innerText = player.playerName;
+                if (player.isBuzzed) {
+                    element.classList.add('buzzed');
+                }
+                if (player.isFrozen) {
+                    element.classList.add('frozen');
+                }
+                playerList.appendChild(element);
+            });
+        }
 
         // Client functions
 
@@ -60,6 +89,7 @@
                         alert(err);
                     } else {
                         setupPlayer(gameId);
+                        updatePlayerList(data.players);
                     }
                 });
             }
@@ -70,6 +100,7 @@
             document.getElementById('game-id-p').classList.remove('hidden');
             document.getElementById('player-name-display').innerText = playerName;
             document.getElementById('player-view').classList.remove('hidden');
+            document.getElementById('player-list-view').classList.remove('hidden');
             document.getElementById('setup').classList.add('hidden');
 
             gameSocket = io.connect(`/${gameId}`);
@@ -98,6 +129,8 @@
             gameSocket.on('reset-all', () => {
                 unfreezeMyBuzzer();
             });
+
+            gameSocket.on('players', updatePlayerList);
         }
 
         function buzz() {
@@ -128,6 +161,7 @@
             document.getElementById('game-id-display').innerText = gameId;
             document.getElementById('game-id-p').classList.remove('hidden');
             document.getElementById('admin-view').classList.remove('hidden');
+            document.getElementById('player-list-view').classList.remove('hidden');
             document.getElementById('setup').classList.add('hidden');
 
             gameSocket = io.connect(`/${gameId}`);
@@ -135,6 +169,8 @@
             gameSocket.on('buzz', data => {
                 document.getElementById('admin-console').innerText = `${data.playerName} has buzzed`;
             });
+
+            gameSocket.on('players', updatePlayerList);
         }
 
         function freezeAll() {

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>BUZZ</h1>
+    <div id="setup">
+        <p>Who are you?</p>
+        <input type="text" name="name" id="name-input">
+        <p>Game ID</p>
+        <input type="text" name="gameid" id="gameid-input">
+        <button onclick="join()">Join</button>
+        <p>Or:</p>
+        <button onclick="createGame()">Create game</button>
+    </div>
+
+    <div id="buzzer">
+        <h2>Buzzer</h2>
+        <button onclick="buzz()">Buzzer</button>
+        <p id="buzz-result">-</p>
+    </div>
+
+    <div id="admin">
+        <h2>Admin view</h2>
+        <p id="admin-console">-</p>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
+        integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+    <script>
+        const socket = io();
+        let gameId = null;
+        let playerName = null;
+
+        // Client functions
+
+        function join() {
+            playerName = document.getElementById("name-input").value;
+            gameId = document.getElementById("gameid-input").value;
+            if (playerName.length > 0 && gameId.length > 0) {
+                socket.emit('join-request', { playerName, gameId }, (err, data) => {
+                    if (err) {
+                        alert(err);
+                    } else {
+                        alert(`Joined game ${gameId}`);
+                        setupGameNotifications(gameId);
+                    }
+                });
+            }
+        }
+
+        function setupGameNotifications(gameId) {
+            gameSocket = io.connect(`/${gameId}`);
+            gameSocket.on('alert', data => {
+                alert(data.message);
+            });
+
+            gameSocket.on('buzz', data => {
+                if (data.playerName === playerName) {
+                    buzzSuccess();
+                } else {
+                    freezeBuzzer();
+                }
+            });
+        }
+
+        function buzz() {
+            socket.emit('buzz');
+        }
+
+        function buzzSuccess() {
+            document.getElementById('buzz-result').innerText = 'DING';
+        }
+
+        function freezeBuzzer() {
+            document.getElementById('buzz-result').innerText = 'nope';
+        }
+
+        // Server functions
+
+        function createGame() {
+            socket.emit('create-game');
+        }
+
+        function setupAdminNotifications(gameId) {
+            gameSocket = io.connect(`/${gameId}`);
+            gameSocket.on('alert', data => {
+                alert(data.message);
+            });
+
+            gameSocket.on('buzz', data => {
+                document.getElementById('admin-console').innerText = `${data.playerName} has buzzed`;
+            });
+        }
+
+        socket.on('game-created', data => {
+            alert(`Game ID is ${data.gameId}`);
+            setupAdminNotifications(data.gameId);
+        });
+    </script>
+</body>
+
+</html>

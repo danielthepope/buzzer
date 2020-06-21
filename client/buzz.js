@@ -150,3 +150,10 @@ function freezePlayer() {
 socket.on('game-created', data => {
     setupAdmin(data.gameId);
 });
+
+socket.on('disconnect', () => {
+    if (isInGame) {
+        alert('You were disconnected');
+        window.location.reload();
+    }
+});

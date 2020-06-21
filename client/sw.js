@@ -1,15 +1,17 @@
 const OFFLINE_URL = '/offline.html';
 
-self.addEventListener('install', function (e) {
-    e.waitUntil(
-        caches.open('buzz').then(function (cache) {
-            return cache.addAll([
-                OFFLINE_URL,
-                '/style.css',
-                '/buzzer.mp3',
-                '/favicon.ico'
-            ]);
-        })
+self.addEventListener('install', function (event) {
+    event.waitUntil(
+        caches.open('buzz')
+            .then(function (cache) {
+                return cache.addAll([
+                    OFFLINE_URL,
+                    '/style.css',
+                    '/buzzer.mp3',
+                    '/favicon.ico'
+                ]);
+            })
+            .then(self.skipWaiting())
     );
 });
 

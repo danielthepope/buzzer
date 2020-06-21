@@ -21,15 +21,19 @@
 <body>
     <h1><span class="link" onclick="confirmExit()">BUZZ!</span></h1>
     <div id="setup">
-        <p>
-            <label for="name-input">Who are you?</label>
-            <input type="text" name="name" id="name-input">
-        </p>
-        <p>
-            <label for="gameid-input">Game ID</label>
-            <input type="text" name="gameid" id="gameid-input">
-        </p>
-        <button onclick="join()">Join</button>
+        <div class="form">
+            <div class="fields">
+                <p>
+                    <label for="name-input">Who are you?</label>
+                    <input type="text" name="name" id="name-input">
+                </p>
+                <p>
+                    <label for="gameid-input">Game ID</label>
+                    <input type="text" name="gameid" id="gameid-input">
+                </p>
+            </div>
+            <button onclick="join()">Join</button>
+        </div>
         <p>Or:</p>
         <button onclick="createGame()">Create game</button>
     </div>
@@ -47,12 +51,13 @@
         <button onclick="freezeAll()">Freeze all</button>
         <button onclick="resetAll()">Reset all</button>
         <button onclick="freezePlayer()">Freeze buzzed player</button>
-        <p id="admin-console">-</p>
     </div>
 
     <div id="player-list-view" class="hidden">
         <h2>Players</h2>
-        <ul id="player-list"></ul>
+        <ul id="player-list">
+            <p>Nobody has joined yet</p>
+        </ul>
     </div>
 
     <audio id="buzz-sound" src="buzzer.mp3" class="hidden"></audio>

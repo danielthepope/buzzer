@@ -10,15 +10,28 @@ body {
     color: black;
 }
 
+.form {
+    display: inline-block;
+    padding: 20px;
+    border: 1px solid gray;
+    border-radius: 20px;
+}
+
+.form .fields {
+    text-align: right;
+}
+
 input[type=text] {
     padding: 0.5em;
     border-radius: 5px;
     margin: 10px;
+    width: 6em;
 }
 
 button {
     padding: 0.5em 2em;
     border-radius: 5px;
+    margin: 8px;
 }
 
 #buzzer {
@@ -31,6 +44,8 @@ button {
     border: white solid 5px;
     box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
     border-radius: 80vmin;
+    max-width: 50vh;
+    max-height: 50vh;
 }
 
 #buzzer[disabled] {

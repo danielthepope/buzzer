@@ -127,10 +127,6 @@ function setupAdmin(gameId) {
 
     gameSocket = io.connect(`/${gameId}`);
 
-    gameSocket.on('buzz', data => {
-        document.getElementById('admin-console').innerText = `${data.playerName} has buzzed`;
-    });
-
     gameSocket.on('players', updatePlayerList);
 }
 
@@ -139,7 +135,6 @@ function freezeAll() {
 }
 
 function resetAll() {
-    document.getElementById('admin-console').innerText = '-';
     socket.emit('admin-reset-all');
 }
 

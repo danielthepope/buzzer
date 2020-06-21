@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buzz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Buzz - Offline</h1>
+    <p>
+        Looks like you're offline. Never mind, until you can get back, here's a button for you to buzz to your heart's
+        content.
+    </p>
+
+    <div id="buzzer"></div>
+    <audio id="buzz-sound" src="buzzer.mp3" class="hidden"></audio>
+    <script>
+        const buzzer = document.getElementById('buzzer');
+        buzzer.addEventListener('touchstart', e => buzz());
+        buzzer.addEventListener('mousedown', e => buzz());
+
+        function buzz() {
+            document.getElementById('buzz-sound').play();
+        }
+    </script>
+</body>
+
+</html>

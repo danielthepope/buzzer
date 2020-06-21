@@ -6,6 +6,15 @@ const buzzer = document.getElementById('buzzer');
 buzzer.addEventListener('touchstart', e => buzz());
 buzzer.addEventListener('mousedown', e => buzz());
 
+let isInGame = false;
+
+function confirmExit() {
+    if (isInGame && !confirm('Are you sure you want to quit?')) {
+        return;
+    }
+    window.location.reload();
+}
+
 function updatePlayerList(players) {
     const playerList = document.getElementById('player-list');
     playerList.innerHTML = '';
@@ -40,6 +49,8 @@ function join() {
 }
 
 function setupPlayer(gameId) {
+    isInGame = true;
+
     document.getElementById('game-id-display').innerText = gameId;
     document.getElementById('game-id-p').classList.remove('hidden');
     document.getElementById('player-name-display').innerText = playerName;
@@ -106,6 +117,8 @@ function createGame() {
 }
 
 function setupAdmin(gameId) {
+    isInGame = true;
+
     document.getElementById('game-id-display').innerText = gameId;
     document.getElementById('game-id-p').classList.remove('hidden');
     document.getElementById('admin-view').classList.remove('hidden');

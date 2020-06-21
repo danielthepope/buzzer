@@ -4,6 +4,12 @@ body {
     background-color: #ffd;
 }
 
+.link {
+    text-decoration: underline;
+    cursor: pointer;
+    color: black;
+}
+
 input[type=text] {
     padding: 0.5em;
     border-radius: 5px;

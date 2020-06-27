@@ -6,9 +6,10 @@ self.addEventListener('install', function (event) {
             .then(function (cache) {
                 return cache.addAll([
                     OFFLINE_URL,
-                    '/style.css',
                     '/buzzer.mp3',
-                    '/favicon.ico'
+                    '/favicon.ico',
+                    '/howler.min.js',
+                    '/style.css'
                 ]);
             })
             .then(self.skipWaiting())

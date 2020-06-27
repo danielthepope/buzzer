@@ -9,21 +9,27 @@
 </head>
 
 <body>
-    <h1><a class="link" href="/">Buzz - Offline</a></h1>
+    <header>
+        <h1><a class="link" href="/">Buzzer <small>is offline</small></a></h1>
+    </header>
     <p>
         Looks like you're offline. Never mind, until you can get back, here's a button for you to buzz to your heart's
         content.
     </p>
 
-    <div id="buzzer"></div>
-    <audio id="buzz-sound" src="buzzer.mp3" class="hidden"></audio>
+    <button id="buzzer" class="ready"></button>
+    <script src="/howler.min.js"></script>
     <script>
         const buzzer = document.getElementById('buzzer');
         buzzer.addEventListener('touchstart', e => buzz());
         buzzer.addEventListener('mousedown', e => buzz());
+        const buzzerSound = new Howl({
+            src: 'buzzer.mp3'
+        });
 
         function buzz() {
-            document.getElementById('buzz-sound').play();
+            buzzerSound.play();
+            console.log('um.. buzz?');
         }
     </script>
 </body>

@@ -6,6 +6,10 @@ const buzzer = document.getElementById('buzzer');
 buzzer.addEventListener('touchstart', e => buzz());
 buzzer.addEventListener('mousedown', e => buzz());
 
+var buzzerSound = new Howl({
+    src: 'buzzer.mp3'
+});
+
 let isInGame = false;
 
 function confirmExit() {
@@ -97,17 +101,20 @@ function buzz() {
 function buzzSuccess() {
     document.getElementById('buzzer').classList.add('success');
     document.getElementById('buzzer').setAttribute('disabled', 'disabled');
-    document.getElementById('buzz-sound').play();
+    document.getElementById('buzzer').classList.remove('ready');
+    buzzerSound.play();
 }
 
 function freezeMyBuzzer() {
     document.getElementById('buzzer').setAttribute('disabled', 'disabled');
     document.getElementById('buzzer').classList.remove('success');
+    document.getElementById('buzzer').classList.remove('ready');
 }
 
 function unfreezeMyBuzzer() {
     document.getElementById('buzzer').removeAttribute('disabled');
     document.getElementById('buzzer').classList.remove('success');
+    document.getElementById('buzzer').classList.add('ready');
 }
 
 // Admin functions

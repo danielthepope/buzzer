@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const fs = require('fs');
 
 server.listen(8080);
 console.log('App is probably listening on 8080');
@@ -15,7 +14,7 @@ app.use(express.static('client'));
 
 class Game {
     gameId; // e.g. '1234'
-    players = [];
+    sessions = [];
     broadcast; // Socket thing
     frozenPlayers = [];
     buzzedPlayer = null;
@@ -24,12 +23,37 @@ class Game {
         this.gameId = gameId;
         this.broadcast = io.of('/' + gameId);
     }
+
+    get players() {
+        return this.sessions.map(s => s.playerName);
+    }
+
+    deletePlayer(playerName) {
+        const index = this.players.indexOf(playerName);
+        if (index > -1) {
+            this.sessions.splice(index, 1);
+        }
+    }
 }
 
 class SessionData {
     gameId; // e.g. '123456'
     playerName; // e.g. 'dan'
     isAdmin = false;
+    #latency = [];
+
+    get latency() {
+        if (this.#latency) {
+            return this.#latency.reduce((a, b) => a + b, 0) / this.#latency.length;
+        } else {
+            return 0;
+        }
+    }
+
+    addLatency(value) {
+        this.#latency.push(value);
+        this.#latency = this.#latency.splice(-5);
+    }
 }
 
 const GAMES = {};
@@ -45,6 +69,15 @@ io.on('connection', (socket) => {
         }
     }
 
+    function measureLatency() {
+        const ping = Date.now();
+        socket.emit('measure-ping', () => {
+            const latency = (Date.now() - ping) / 2;
+            sessionData.addLatency(latency); // Divide by 2 because I only want the latency of one direction
+            log(`${sessionData.playerName} latency: ${latency}ms (average ${sessionData.latency}ms)`);
+        });
+    }
+
     log('New connection');
 
     socket.on('join-request', (data, callback) => {
@@ -55,13 +88,15 @@ io.on('connection', (socket) => {
             if (GAMES[sessionData.gameId].players.includes(data.playerName)) {
                 callback('Player name already in use');
             } else {
-                GAMES[data.gameId].players.push(data.playerName);
+                GAMES[data.gameId].sessions.push(sessionData);
                 log(`${data.playerName} has joined`);
                 callback(null, {
                     playerName: sessionData.playerName,
                     gameId: sessionData.gameId,
                     players: updatePlayerList()
                 });
+                measureLatency();
+                setInterval(measureLatency, 10000);
             }
         } else {
             callback('Invalid Game ID');
@@ -125,9 +160,8 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         log(`${sessionData?.playerName} has left`);
         if (sessionData?.playerName && sessionData?.gameId) {
-            if (sessionData.gameId in GAMES && GAMES[sessionData.gameId].players.includes(sessionData.playerName)) {
-                const index = GAMES[sessionData.gameId].players.indexOf(sessionData.playerName);
-                GAMES[sessionData.gameId].players.splice(index, 1);
+            if (sessionData.gameId in GAMES) {
+                GAMES[sessionData.gameId].deletePlayer(sessionData.playerName);
                 updatePlayerList();
             }
         }

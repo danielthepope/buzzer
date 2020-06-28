@@ -149,6 +149,10 @@ function freezePlayer() {
     socket.emit('admin-freeze-player');
 }
 
+socket.on('measure-ping', callback => {
+    callback();
+});
+
 socket.on('game-created', data => {
     setupAdmin(data.gameId);
 });

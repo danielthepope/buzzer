@@ -20,10 +20,10 @@
 
 <body>
     <header>
-        <h1><span class="link" onclick="confirmExit()">Buzzer<small>.mobi</small></span></h1>
+        <h1><a class="link" href="javascript:confirmExit()">Buzzer<small>.mobi</small></a></h1>
     </header>
     <div id="setup">
-        <div class="form">
+        <form class="form" onsubmit="join(); return false;">
             <div class="fields">
                 <p>
                     <label for="name-input">Who are you?</label>
@@ -34,8 +34,8 @@
                     <input type="text" name="gameid" id="gameid-input">
                 </p>
             </div>
-            <button onclick="join()">Join</button>
-        </div>
+            <input type="submit" value="Join">
+        </form>
         <p>Or:</p>
         <button onclick="createGame()">Create game</button>
     </div>
@@ -45,7 +45,7 @@
     <div id="player-view" class="hidden">
         <p>Welcome <span id="player-name-display">-</span></p>
         <h2>Buzzer</h2>
-        <button id="buzzer" class="ready"></button>
+        <button id="buzzer" class="ready" onclick="buzz()"></button>
     </div>
 
     <div id="admin-view" class="hidden">

@@ -54,12 +54,7 @@ input[type=text] {
     width: 6em;
 }
 
-input:focus, button:focus {
-    border-color: #21a815;
-    box-shadow: #21a815 0 0 10px;
-}
-
-button {
+button, input[type=submit] {
     background-color: #21a815;
     border-radius: 5px;
     border: none;
@@ -73,8 +68,13 @@ button {
     padding: 0.5em 2em;
 }
 
-button:hover {
+button:hover, input[type=submit]:hover {
     background-color: #46af3c;
+}
+
+input:focus, button:focus {
+    border-color: #21a815;
+    box-shadow: #21a815 0 0 10px;
 }
 
 #buzzer {
@@ -91,7 +91,7 @@ button:hover {
     width: 80vmin;
 }
 
-#buzzer.ready:active {
+#buzzer.ready:active, #buzzer.ready:focus {
     background-image: radial-gradient(#e44640 30%,#810404 60%);
     border-width: 10px;
     box-shadow: rgba(0,0,0,0.5) 0 0 20px;

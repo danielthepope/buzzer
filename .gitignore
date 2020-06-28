@@ -115,4 +115,4 @@ dist
 .pnp.*
 
 # Project-specific
-buzz.tar.gz
+*.tar.gz

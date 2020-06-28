@@ -17,12 +17,10 @@
         content.
     </p>
 
-    <button id="buzzer" class="ready"></button>
+    <button id="buzzer" class="ready" onclick="buzz()"></button>
     <script src="/howler.min.js"></script>
     <script>
         const buzzer = document.getElementById('buzzer');
-        buzzer.addEventListener('touchstart', e => buzz());
-        buzzer.addEventListener('mousedown', e => buzz());
         const buzzerSound = new Howl({
             src: 'buzzer.mp3'
         });

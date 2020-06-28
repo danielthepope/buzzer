@@ -18,10 +18,16 @@ class Game {
     broadcast; // Socket thing
     frozenPlayers = [];
     buzzedPlayer = null;
+    buzzes = [];
+    t0 = 0;
 
     constructor(gameId) {
         this.gameId = gameId;
         this.broadcast = io.of('/' + gameId);
+    }
+
+    log(message) {
+        console.log(`[${this.gameId}] ${message}`);
     }
 
     get players() {
@@ -34,6 +40,51 @@ class Game {
             this.sessions.splice(index, 1);
         }
     }
+
+    get maximumLatency() {
+        return Math.max(...this.sessions.map(s => s.latency));
+    }
+
+    updatePlayerList() {
+        const data = this.players.map(playerName => {
+            return {
+                playerName: playerName,
+                isFrozen: this.frozenPlayers.includes(playerName),
+                isBuzzed: this.buzzedPlayer === playerName
+            };
+        });
+        // Sort by Buzzed at top, then those not frozen, then frozen, alphabetically
+        data.sort((a, b) => {
+            if (a.isBuzzed) return -1;
+            if (b.isBuzzed) return 1;
+            if (a.isFrozen && !b.isFrozen) return 1;
+            if (!a.isFrozen && b.isFrozen) return -1;
+            if (a.playerName < b.playerName) return -1;
+            if (a.playerName > b.playerName) return 1;
+            return 0;
+        });
+
+        this.broadcast.emit('players', data);
+        return data;
+    }
+
+    buzz(playerName, latency) {
+        const receivedTime = Date.now();
+        const buzzTime = receivedTime - latency;
+        if (this.buzzes.length === 0) {
+            this.t0 = receivedTime;
+            setTimeout(() => {
+                const firstBuzz = this.buzzes.sort((a, b) => a.buzzTime - b.buzzTime)[0];
+                this.buzzedPlayer = firstBuzz.playerName;
+                this.log(`${this.buzzedPlayer} buzzed first`);
+                this.broadcast.emit('buzz', { playerName: this.buzzedPlayer });
+                this.updatePlayerList();
+            }, this.maximumLatency);
+        }
+        this.buzzes.push({ playerName, buzzTime });
+        this.log(`${Math.floor(buzzTime - this.t0).toString().padStart(5, ' ')}: buzz from ${playerName}`);
+    }
+
 }
 
 class SessionData {
@@ -60,10 +111,11 @@ const GAMES = {};
 
 io.on('connection', (socket) => {
     let sessionData = null;
+    let latencyChecker = null;
 
     function log(message) {
         if (sessionData?.gameId) {
-            console.log(`[${sessionData.gameId}] ${message}`);
+            GAMES[sessionData.gameId].log(message);
         } else {
             console.log(message);
         }
@@ -93,10 +145,10 @@ io.on('connection', (socket) => {
                 callback(null, {
                     playerName: sessionData.playerName,
                     gameId: sessionData.gameId,
-                    players: updatePlayerList()
+                    players: GAMES[data.gameId].updatePlayerList()
                 });
                 measureLatency();
-                setInterval(measureLatency, 10000);
+                latencyChecker = setInterval(measureLatency, 10000);
             }
         } else {
             callback('Invalid Game ID');
@@ -105,12 +157,7 @@ io.on('connection', (socket) => {
 
     socket.on('buzz', () => {
         if (sessionData?.gameId && sessionData?.playerName) {
-            if (GAMES[sessionData.gameId].buzzedPlayer === null) {
-                GAMES[sessionData.gameId].buzzedPlayer = sessionData.playerName;
-                GAMES[sessionData.gameId].broadcast.emit('buzz', { playerName: sessionData.playerName });
-                updatePlayerList();
-                log(`${sessionData.playerName} has buzzed`);
-            }
+            GAMES[sessionData.gameId].buzz(sessionData.playerName, sessionData.latency);
         }
     });
 
@@ -132,7 +179,7 @@ io.on('connection', (socket) => {
         if (sessionData.isAdmin) {
             GAMES[sessionData.gameId].frozenPlayers = Array.from(GAMES[sessionData.gameId].players);
             GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
-            updatePlayerList();
+            GAMES[sessionData.gameId].updatePlayerList();
             log('Disabled all buzzers');
         }
     });
@@ -141,8 +188,9 @@ io.on('connection', (socket) => {
         if (sessionData.isAdmin) {
             GAMES[sessionData.gameId].frozenPlayers.push(GAMES[sessionData.gameId].buzzedPlayer);
             GAMES[sessionData.gameId].buzzedPlayer = null;
+            GAMES[sessionData.gameId].buzzes = [];
             GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
-            updatePlayerList();
+            GAMES[sessionData.gameId].updatePlayerList();
             log(`FROZEN: ${GAMES[sessionData.gameId].frozenPlayers}`);
         }
     });
@@ -151,18 +199,20 @@ io.on('connection', (socket) => {
         if (sessionData.isAdmin) {
             GAMES[sessionData.gameId].frozenPlayers = [];
             GAMES[sessionData.gameId].buzzedPlayer = null;
+            GAMES[sessionData.gameId].buzzes = [];
             GAMES[sessionData.gameId].broadcast.emit('reset-all');
-            updatePlayerList();
+            GAMES[sessionData.gameId].updatePlayerList();
             log('RESET');
         }
     });
 
     socket.on('disconnect', () => {
-        log(`${sessionData?.playerName} has left`);
+        log(`${sessionData?.playerName || (sessionData?.isAdmin ? 'admin' : 'non-player')} has left`);
+        clearInterval(latencyChecker);
         if (sessionData?.playerName && sessionData?.gameId) {
             if (sessionData.gameId in GAMES) {
                 GAMES[sessionData.gameId].deletePlayer(sessionData.playerName);
-                updatePlayerList();
+                GAMES[sessionData.gameId].updatePlayerList();
             }
         }
         if (sessionData?.isAdmin) {
@@ -171,29 +221,6 @@ io.on('connection', (socket) => {
             delete GAMES[sessionData.gameId];
         }
     });
-
-    function updatePlayerList() {
-        const data = GAMES[sessionData.gameId].players.map(playerName => {
-            return {
-                playerName: playerName,
-                isFrozen: GAMES[sessionData.gameId].frozenPlayers.includes(playerName),
-                isBuzzed: GAMES[sessionData.gameId].buzzedPlayer === playerName
-            };
-        });
-        // Sort by Buzzed at top, then those not frozen, then frozen, alphabetically
-        data.sort((a, b) => {
-            if (a.isBuzzed) return -1;
-            if (b.isBuzzed) return 1;
-            if (a.isFrozen && !b.isFrozen) return 1;
-            if (!a.isFrozen && b.isFrozen) return -1;
-            if (a.playerName < b.playerName) return -1;
-            if (a.playerName > b.playerName) return 1;
-            return 0;
-        });
-
-        GAMES[sessionData.gameId].broadcast.emit('players', data);
-        return data;
-    }
 });
 
 function generateGameId() {

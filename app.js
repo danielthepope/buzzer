@@ -133,7 +133,16 @@ io.on('connection', (socket) => {
     log('New connection');
 
     socket.on('join-request', (data, callback) => {
-        if (data.gameId in GAMES) {
+        if (data.gameId.length !== 4 || !parseInt(data.gameId)) {
+            callback('Invalid game ID');
+        }
+        else if (data.playerName.length > 30) {
+            callback('Nickname too long');
+        }
+        else if (!data.playerName) {
+            callback('Please provide a nickname');
+        }
+        else if (data.gameId in GAMES) {
             sessionData = new SessionData();
             sessionData.playerName = data.playerName;
             sessionData.gameId = data.gameId;
@@ -151,7 +160,7 @@ io.on('connection', (socket) => {
                 latencyChecker = setInterval(measureLatency, 10000);
             }
         } else {
-            callback('Invalid Game ID');
+            callback("Game ID doesn't exist");
         }
     });
 

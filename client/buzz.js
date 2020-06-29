@@ -40,16 +40,14 @@ function updatePlayerList(players) {
 function join() {
     playerName = document.getElementById("name-input").value;
     gameId = document.getElementById("gameid-input").value;
-    if (playerName.length > 0 && gameId.length > 0) {
-        socket.emit('join-request', { playerName, gameId }, (err, data) => {
-            if (err) {
-                alert(err);
-            } else {
-                setupPlayer(gameId);
-                updatePlayerList(data.players);
-            }
-        });
-    }
+    socket.emit('join-request', { playerName, gameId }, (err, data) => {
+        if (err) {
+            alert(err);
+        } else {
+            setupPlayer(gameId);
+            updatePlayerList(data.players);
+        }
+    });
 }
 
 function setupPlayer(gameId) {

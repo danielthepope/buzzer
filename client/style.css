@@ -27,7 +27,8 @@ header small {
 .link {
     color: white;
     cursor: pointer;
-    text-decoration: underline #ffffffaa;
+    text-decoration: underline;
+    text-decoration-color: #ffffffaa;
 }
 
 .form {
@@ -40,6 +41,12 @@ header small {
 
 .form .fields {
     text-align: right;
+}
+
+input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 input[type=text] {

@@ -20,7 +20,7 @@
 
 <body>
     <header>
-        <h1><a class="link" href="javascript:confirmExit()">Buzzer<small>.mobi</small></a></h1>
+        <h1><a href="javascript:confirmExit()">Buzzer<small>.mobi</small></a></h1>
     </header>
     <div id="setup">
         <form class="form" onsubmit="join(); return false;">
@@ -38,7 +38,24 @@
             <input type="submit" value="Join">
         </form>
         <p>Or:</p>
-        <button onclick="createGame()">Create game</button>
+        <p>
+            <button onclick="createGame()">Create game</button>
+        </p>
+        <div class="text-container">
+            <h2>What is it?</h2>
+            <p>Buzzer.mobi turns your phone into an Internet-connected gameshow buzzer.</p>
+            <p>To host a game, click the "Create game" button. You'll be given a Game ID to share with your contestants.
+            </p>
+            <p>Contentants then enter the Game ID along with their nickname to join.</p>
+            <p>When a player buzzes in, they will freeze out everyone else's buttons. Admins can freeze the buzzed
+                player (unfreezing everyone else), or reset everyone's buzzers.</p>
+            <p>Buzzer.mobi features latency correction, so users on slow connections are not negatively impacted.</p>
+        </div>
+
+        <footer>
+            <hr>
+            <p>Buzzer.mobi is a side project by <a href="https://twitter.com/danielthepope">@danielthepope</a>.</p>
+        </footer>
     </div>
 
     <p id="game-id-p" class="hidden">Game ID: <strong id="game-id-display">-</strong></p>
@@ -50,7 +67,8 @@
     </div>
 
     <div id="admin-view" class="hidden">
-        <h2>Admin view</h2>
+        <p>Share this Game ID with other players</p>
+        <h2>Host view</h2>
         <button onclick="freezeAll()">Freeze all</button>
         <button onclick="resetAll()">Reset all</button>
         <button onclick="freezePlayer()">Freeze buzzed player</button>

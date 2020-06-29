@@ -24,11 +24,32 @@ header small {
     color: #ffffffaa;
 }
 
-.link {
+a {
+    color: #135f0c;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1 a {
     color: white;
-    cursor: pointer;
     text-decoration: underline;
     text-decoration-color: #ffffffaa;
+}
+
+.text-container {
+    display: inline-block;
+    max-width: 500px;
+    padding: 10px;
+    text-align: left;
+}
+
+hr {
+    border: 1px solid #135f0c44;
+    margin: 20px auto;
+    width: 70%;
 }
 
 .form {

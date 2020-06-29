@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
 
     function log(message) {
         if (sessionData?.gameId) {
-            GAMES[sessionData.gameId].log(message);
+            console.log(`[${sessionData.gameId}] ${message}`);
         } else {
             console.log(message);
         }

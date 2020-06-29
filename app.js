@@ -158,6 +158,7 @@ io.on('connection', (socket) => {
                 });
                 measureLatency();
                 latencyChecker = setInterval(measureLatency, 10000);
+                GAMES[data.gameId].broadcast.emit('admin-message', { message: `${data.playerName} has joined` });
             }
         } else {
             callback("Game ID doesn't exist");
@@ -222,6 +223,7 @@ io.on('connection', (socket) => {
             if (sessionData.gameId in GAMES) {
                 GAMES[sessionData.gameId].deletePlayer(sessionData.playerName);
                 GAMES[sessionData.gameId].updatePlayerList();
+                GAMES[sessionData.gameId].broadcast.emit('admin-message', { message: `${sessionData.playerName} has left` });
             }
         }
         if (sessionData?.isAdmin) {

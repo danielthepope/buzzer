@@ -67,11 +67,11 @@
     </div>
 
     <div id="admin-view" class="hidden">
-        <p>Share this Game ID with other players</p>
         <h2>Host view</h2>
+        <p id="admin-message" class="message-bar">Share the Game ID with other players to let them join</p>
+        <button id="freeze-player-button" onclick="freezePlayer()" disabled>Freeze player</button>
         <button onclick="freezeAll()">Freeze all</button>
         <button onclick="resetAll()">Reset all</button>
-        <button onclick="freezePlayer()">Freeze buzzed player</button>
     </div>
 
     <div id="player-list-view" class="hidden">

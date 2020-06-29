@@ -35,6 +35,29 @@ function updatePlayerList(players) {
     });
 }
 
+function updateAdminButtons(players) {
+    const buzzedPlayer = players.find(p => p.isBuzzed);
+    const freezePlayerButton = document.getElementById('freeze-player-button');
+    if (buzzedPlayer) {
+        updateAdminMessage(`${buzzedPlayer.playerName} has buzzed`);
+        freezePlayerButton.innerText = `Freeze ${buzzedPlayer.playerName}`;
+        freezePlayerButton.removeAttribute('disabled');
+    } else {
+        updateAdminMessage(null);
+        freezePlayerButton.innerText = 'Freeze player';
+        freezePlayerButton.setAttribute('disabled', 'disabled');
+    }
+}
+
+function updateAdminMessage(message) {
+    const adminMessage = document.getElementById('admin-message');
+    if (message) {
+        adminMessage.innerText = message;
+    } else {
+        adminMessage.innerHTML = '&nbsp;';
+    }
+}
+
 // Client functions
 
 function join() {
@@ -132,7 +155,14 @@ function setupAdmin(gameId) {
 
     gameSocket = io.connect(`/${gameId}`);
 
-    gameSocket.on('players', updatePlayerList);
+    gameSocket.on('players', (players) => {
+        updatePlayerList(players);
+        updateAdminButtons(players);
+    });
+
+    gameSocket.on('admin-message', data => {
+        updateAdminMessage(data.message);
+    });
 }
 
 function freezeAll() {

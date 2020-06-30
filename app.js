@@ -17,6 +17,7 @@ class Game {
     sessions = [];
     broadcast; // Socket thing
     frozenPlayers = [];
+    allFrozen = false;
     buzzedPlayer = null;
     buzzes = [];
     t0 = 0;
@@ -151,6 +152,9 @@ io.on('connection', (socket) => {
             } else {
                 GAMES[data.gameId].sessions.push(sessionData);
                 log(`${data.playerName} has joined`);
+                if (GAMES[sessionData.gameId].allFrozen) {
+                    GAMES[sessionData.gameId].frozenPlayers.push(sessionData.playerName);
+                }
                 callback(null, {
                     playerName: sessionData.playerName,
                     gameId: sessionData.gameId,
@@ -188,7 +192,9 @@ io.on('connection', (socket) => {
     socket.on('admin-freeze-all', () => {
         if (sessionData.isAdmin) {
             GAMES[sessionData.gameId].frozenPlayers = Array.from(GAMES[sessionData.gameId].players);
-            GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
+            GAMES[sessionData.gameId].allFrozen = true;
+            GAMES[sessionData.gameId].buzzedPlayer = null;
+            GAMES[sessionData.gameId].buzzes = [];
             GAMES[sessionData.gameId].updatePlayerList();
             log('Disabled all buzzers');
         }
@@ -199,7 +205,6 @@ io.on('connection', (socket) => {
             GAMES[sessionData.gameId].frozenPlayers.push(GAMES[sessionData.gameId].buzzedPlayer);
             GAMES[sessionData.gameId].buzzedPlayer = null;
             GAMES[sessionData.gameId].buzzes = [];
-            GAMES[sessionData.gameId].broadcast.emit('freeze-players', { players: GAMES[sessionData.gameId].frozenPlayers });
             GAMES[sessionData.gameId].updatePlayerList();
             log(`FROZEN: ${GAMES[sessionData.gameId].frozenPlayers}`);
         }
@@ -208,9 +213,9 @@ io.on('connection', (socket) => {
     socket.on('admin-reset-all', () => {
         if (sessionData.isAdmin) {
             GAMES[sessionData.gameId].frozenPlayers = [];
+            GAMES[sessionData.gameId].allFrozen = false;
             GAMES[sessionData.gameId].buzzedPlayer = null;
             GAMES[sessionData.gameId].buzzes = [];
-            GAMES[sessionData.gameId].broadcast.emit('reset-all');
             GAMES[sessionData.gameId].updatePlayerList();
             log('RESET');
         }

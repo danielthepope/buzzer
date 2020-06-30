@@ -19,7 +19,7 @@ function confirmExit() {
     window.location.reload();
 }
 
-function updatePlayerList(players) {
+function updatePlayers(players) {
     const playerList = document.getElementById('player-list');
     playerList.innerHTML = '';
     players.forEach(player => {
@@ -33,6 +33,17 @@ function updatePlayerList(players) {
         }
         playerList.appendChild(element);
     });
+
+    // Is my buzzer enabled?
+    const me = players.find(p => p.playerName === playerName);
+    const someoneBuzzed = players.some(p => p.isBuzzed);
+    if (me && !me.isBuzzed) {
+        if (me.isFrozen || someoneBuzzed) {
+            freezeMyBuzzer();
+        } else {
+            unfreezeMyBuzzer();
+        }
+    }
 }
 
 function updateAdminButtons(players) {
@@ -68,7 +79,7 @@ function join() {
             alert(err);
         } else {
             setupPlayer(gameId);
-            updatePlayerList(data.players);
+            updatePlayers(data.players);
         }
     });
 }
@@ -98,19 +109,7 @@ function setupPlayer(gameId) {
         }
     });
 
-    gameSocket.on('freeze-players', (data) => {
-        if (data.players.includes(playerName)) {
-            freezeMyBuzzer();
-        } else {
-            unfreezeMyBuzzer();
-        }
-    });
-
-    gameSocket.on('reset-all', () => {
-        unfreezeMyBuzzer();
-    });
-
-    gameSocket.on('players', updatePlayerList);
+    gameSocket.on('players', updatePlayers);
 }
 
 function buzz() {
@@ -156,7 +155,7 @@ function setupAdmin(gameId) {
     gameSocket = io.connect(`/${gameId}`);
 
     gameSocket.on('players', (players) => {
-        updatePlayerList(players);
+        updatePlayers(players);
         updateAdminButtons(players);
     });
 

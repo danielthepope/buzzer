@@ -7,7 +7,7 @@ buzzer.addEventListener('touchstart', e => buzz());
 buzzer.addEventListener('mousedown', e => buzz());
 
 var buzzerSound = new Howl({
-    src: 'buzzer.mp3'
+    src: '/audio/success-echo.mp3'
 });
 
 let isInGame = false;

@@ -17,17 +17,31 @@
         content.
     </p>
 
-    <button id="buzzer" class="ready" onclick="buzz()"></button>
+    <div id="buzzer-container">
+        <button id="buzzer" class="ready"></button>
+    </div>
+
+    <script src="/hammer.min.js"></script>
     <script src="/howler.min.js"></script>
     <script>
         const buzzer = document.getElementById('buzzer');
+        const buzzerHammer = new Hammer.Manager(buzzer);
+
+        buzzerHammer.add(new Hammer.Press({ time: 10 }));
+        buzzerHammer.on('press', e => {
+            buzzer.classList.add('pressed');
+            buzz();
+        });
+        buzzerHammer.on('pressup', e => {
+            buzzer.classList.remove('pressed');
+        });
+
         const buzzerSound = new Howl({
             src: '/audio/success-echo.mp3'
         });
 
         function buzz() {
             buzzerSound.play();
-            console.log('um.. buzz?');
         }
     </script>
 </body>

@@ -8,6 +8,7 @@ self.addEventListener('install', function (event) {
                     OFFLINE_URL,
                     '/audio/success-echo.mp3',
                     '/favicon.ico',
+                    '/hammer.min.js',
                     '/howler.min.js',
                     '/style.css'
                 ]);

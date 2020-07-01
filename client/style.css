@@ -102,13 +102,21 @@ button:enabled:hover, input[type=submit]:hover {
 }
 
 button:disabled {
-    opacity: 0.5;
     cursor: default;
+    opacity: 0.5;
 }
 
 input:focus, button:focus {
     border-color: #21a815;
     box-shadow: #21a815 0 0 10px;
+}
+
+#buzzer-container {
+    display: inline-block;
+    height: 80vmin;
+    max-height: 50vh;
+    max-width: 50vh;
+    width: 80vmin;
 }
 
 #buzzer {
@@ -117,22 +125,26 @@ input:focus, button:focus {
     border: white solid 5px;
     box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
     cursor: pointer;
-    display: inline-block;
-    height: 80vmin;
-    max-height: 50vh;
-    max-width: 50vh;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     position: relative;
-    width: 80vmin;
+    width: 100%;
 }
 
-#buzzer.ready:active, #buzzer.ready:focus {
+#buzzer.ready:hover, #buzzer.ready:focus {
+    background-image: radial-gradient(#e44640 30%, #bd2222 50%, #810404 70%);
+}
+
+#buzzer.ready.pressed {
     background-image: radial-gradient(#e44640 30%,#810404 60%);
-    border-width: 10px;
     box-shadow: rgba(0,0,0,0.5) 0 0 20px;
-    top: 5px;
+    height: 96%;
+    margin: 2%;
+    width: 96%;
 }
 
-#buzzer[disabled] {
+#buzzer.disabled {
     box-shadow: none;
     cursor: default;
     opacity: 0.5;

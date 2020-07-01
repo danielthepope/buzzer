@@ -3,10 +3,17 @@ let gameId = null;
 let playerName = null;
 
 const buzzer = document.getElementById('buzzer');
-buzzer.addEventListener('touchstart', e => buzz());
-buzzer.addEventListener('mousedown', e => buzz());
+const buzzerHammer = new Hammer.Manager(buzzer);
+buzzerHammer.add(new Hammer.Press({ time: 10 }));
+buzzerHammer.on('press', e => {
+    buzzer.classList.add('pressed');
+    buzz();
+});
+buzzerHammer.on('pressup', e => {
+    buzzer.classList.remove('pressed');
+});
 
-var buzzerSound = new Howl({
+const buzzerSound = new Howl({
     src: '/audio/success-echo.mp3'
 });
 
@@ -52,11 +59,11 @@ function updateAdminButtons(players) {
     if (buzzedPlayer) {
         updateAdminMessage(`${buzzedPlayer.playerName} has buzzed`);
         freezePlayerButton.innerText = `Freeze ${buzzedPlayer.playerName}`;
-        freezePlayerButton.removeAttribute('disabled');
+        freezePlayerButton.classList.remove('disabled');
     } else {
         updateAdminMessage(null);
         freezePlayerButton.innerText = 'Freeze player';
-        freezePlayerButton.setAttribute('disabled', 'disabled');
+        freezePlayerButton.classList.add('disabled');
     }
 }
 
@@ -113,26 +120,26 @@ function setupPlayer(gameId) {
 }
 
 function buzz() {
-    if (!document.getElementById('buzzer').hasAttribute('disabled')) {
+    if (!document.getElementById('buzzer').classList.contains('disabled')) {
         socket.emit('buzz');
     }
 }
 
 function buzzSuccess() {
     document.getElementById('buzzer').classList.add('success');
-    document.getElementById('buzzer').setAttribute('disabled', 'disabled');
+    document.getElementById('buzzer').classList.add('disabled');
     document.getElementById('buzzer').classList.remove('ready');
     buzzerSound.play();
 }
 
 function freezeMyBuzzer() {
-    document.getElementById('buzzer').setAttribute('disabled', 'disabled');
+    document.getElementById('buzzer').classList.add('disabled');
     document.getElementById('buzzer').classList.remove('success');
     document.getElementById('buzzer').classList.remove('ready');
 }
 
 function unfreezeMyBuzzer() {
-    document.getElementById('buzzer').removeAttribute('disabled');
+    document.getElementById('buzzer').classList.remove('disabled');
     document.getElementById('buzzer').classList.remove('success');
     document.getElementById('buzzer').classList.add('ready');
 }

@@ -100,6 +100,7 @@ function setupPlayer(gameId) {
     document.getElementById('player-view').classList.remove('hidden');
     document.getElementById('player-list-view').classList.remove('hidden');
     document.getElementById('setup').classList.add('hidden');
+    document.getElementById('buzzer-header').scrollIntoView();
 
     gameSocket = io.connect(`/${gameId}`);
 

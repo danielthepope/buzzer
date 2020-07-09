@@ -59,11 +59,11 @@ function updateAdminButtons(players) {
     if (buzzedPlayer) {
         updateAdminMessage(`${buzzedPlayer.playerName} has buzzed`);
         freezePlayerButton.innerText = `Freeze ${buzzedPlayer.playerName}`;
-        freezePlayerButton.classList.remove('disabled');
+        freezePlayerButton.removeAttribute('disabled');
     } else {
         updateAdminMessage(null);
         freezePlayerButton.innerText = 'Freeze player';
-        freezePlayerButton.classList.add('disabled');
+        freezePlayerButton.setAttribute('disabled', 'disabled');
     }
 }
 

@@ -2,6 +2,17 @@ const socket = io();
 let gameId = null;
 let playerName = null;
 
+const storedGameId = window.sessionStorage.getItem('gameId');
+const storedName = window.localStorage.getItem('name');
+
+document.getElementById('gameid-input').value = storedGameId;
+document.getElementById('name-input').value = storedName;
+
+function saveAutofill(gameId, name) {
+    window.sessionStorage.setItem('gameId', gameId);
+    window.localStorage.setItem('name', name);
+}
+
 const buzzer = document.getElementById('buzzer');
 const buzzerHammer = new Hammer.Manager(buzzer);
 buzzerHammer.add(new Hammer.Press({ time: 10 }));
@@ -87,6 +98,7 @@ function join() {
         } else {
             setupPlayer(gameId);
             updatePlayers(data.players);
+            saveAutofill(gameId, playerName);
         }
     });
 }

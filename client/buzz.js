@@ -26,7 +26,7 @@ buzzerHammer.on('pressup', e => {
 });
 
 const buzzerSound = new Howl({
-    src: '/audio/success-echo.mp3'
+    src: '/audio/success.mp3'
 });
 
 let isInGame = false;

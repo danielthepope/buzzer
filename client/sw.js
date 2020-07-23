@@ -6,7 +6,7 @@ self.addEventListener('install', function (event) {
             .then(function (cache) {
                 return cache.addAll([
                     OFFLINE_URL,
-                    '/audio/success-echo.mp3',
+                    '/audio/success.mp3',
                     '/favicon.ico',
                     '/hammer.min.js',
                     '/howler.min.js',

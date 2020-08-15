@@ -38,6 +38,12 @@ function confirmExit() {
     window.location.reload();
 }
 
+function vibrate(ms) {
+    if ('vibrate' in navigator) {
+        navigator.vibrate(ms);
+    }
+}
+
 function updatePlayers(players) {
     const playerList = document.getElementById('player-list');
     playerList.innerHTML = '';
@@ -86,7 +92,7 @@ function updateAdminMessage(message) {
     } else {
         adminMessage.innerHTML = '&nbsp;';
     }
-    navigator.vibrate(50);
+    vibrate(50);
 }
 
 // Client functions
@@ -133,19 +139,19 @@ function setupPlayer(gameId) {
 
     gameSocket.on('players', updatePlayers);
 
-    navigator.vibrate(50);
+    vibrate(50);
 }
 
 function buzz() {
     if (!document.getElementById('buzzer').classList.contains('disabled')) {
         socket.emit('buzz');
-        navigator.vibrate(30);
+        vibrate(30);
     }
 }
 
 function buzzUp() {
     if (!document.getElementById('buzzer').classList.contains('disabled')) {
-        navigator.vibrate(30);
+        vibrate(30);
     }
 }
 
@@ -154,7 +160,7 @@ function buzzSuccess() {
     document.getElementById('buzzer').classList.add('disabled');
     document.getElementById('buzzer').classList.remove('ready');
     buzzerSound.play();
-    navigator.vibrate(300);
+    vibrate(300);
 }
 
 function freezeMyBuzzer() {
@@ -166,7 +172,7 @@ function freezeMyBuzzer() {
 function unfreezeMyBuzzer() {
     const buzzer = document.getElementById('buzzer');
     if (buzzer.classList.contains('disabled')) {
-        navigator.vibrate(50);
+        vibrate(50);
     }
     buzzer.classList.remove('disabled');
     document.getElementById('buzzer').classList.remove('success');
@@ -199,7 +205,7 @@ function setupAdmin(gameId) {
         updateAdminMessage(data.message);
     });
 
-    navigator.vibrate(50);
+    vibrate(50);
 }
 
 function freezeAll() {

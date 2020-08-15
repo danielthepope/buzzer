@@ -14,16 +14,12 @@ function saveAutofill(gameId, name) {
 }
 
 const buzzer = document.getElementById('buzzer');
+buzzer.onkeydown = buzz;
+buzzer.onkeyup = buzzUp;
 const buzzerHammer = new Hammer.Manager(buzzer);
 buzzerHammer.add(new Hammer.Press({ time: 10 }));
-buzzerHammer.on('press', e => {
-    buzzer.classList.add('pressed');
-    buzz();
-});
-buzzerHammer.on('pressup', e => {
-    buzzer.classList.remove('pressed');
-    buzzUp();
-});
+buzzerHammer.on('press', buzz);
+buzzerHammer.on('pressup', buzzUp);
 
 const buzzerSound = new Howl({
     src: '/audio/success.mp3'
@@ -143,16 +139,22 @@ function setupPlayer(gameId) {
     vibrate(50);
 }
 
-function buzz() {
-    if (!document.getElementById('buzzer').classList.contains('disabled')) {
-        socket.emit('buzz');
-        vibrate(30);
+function buzz(e) {
+    if (!('key' in e) || e.key === ' ' || e.key === 'Enter') {
+        buzzer.classList.add('pressed');
+        if (!document.getElementById('buzzer').classList.contains('disabled')) {
+            socket.emit('buzz');
+            vibrate(30);
+        }
     }
 }
 
-function buzzUp() {
-    if (!document.getElementById('buzzer').classList.contains('disabled')) {
-        vibrate(30);
+function buzzUp(e) {
+    if (!('key' in e) || e.key === ' ' || e.key === 'Enter') {
+        buzzer.classList.remove('pressed');
+        if (!document.getElementById('buzzer').classList.contains('disabled')) {
+            vibrate(30);
+        }
     }
 }
 

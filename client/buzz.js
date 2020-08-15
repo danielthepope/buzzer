@@ -36,6 +36,7 @@ function confirmExit() {
         return;
     }
     window.location.reload();
+    return false;
 }
 
 function vibrate(ms) {

@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "cucumber-js"
   },
   "keywords": [],
   "author": "",
@@ -12,5 +13,9 @@
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "cucumber": "^6.0.5",
+    "selenium-webdriver": "^4.0.0-alpha.7"
   }
 }

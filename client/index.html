@@ -20,7 +20,7 @@
 
 <body>
     <header>
-        <h1><a href="" onclick="confirmExit()">Buzzer<small>.mobi</small></a></h1>
+        <h1><a id="home-link" href="" onclick="confirmExit()">Buzzer<small>.mobi</small></a></h1>
     </header>
     <div id="setup">
         <form class="form" onsubmit="join(); return false;" autocomplete="off">
@@ -35,11 +35,11 @@
                     <input type="text" name="name" id="name-input" maxlength="30">
                 </p>
             </div>
-            <input type="submit" value="Join">
+            <input id="join-button" type="submit" value="Join">
         </form>
         <p>Or:</p>
         <p>
-            <button onclick="createGame()">Create game</button>
+            <button id="create-button" onclick="createGame()">Create game</button>
         </p>
         <div class="text-container">
             <h2>What is it?</h2>

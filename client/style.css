@@ -6,10 +6,15 @@ body {
     line-height: 1.3;
     margin: 8px;
     text-align: center;
+
+    --theme-colour: #21a815;
+    --theme-colour-darker: #135f0c;
+    --theme-colour-hover: #46af3c;
+    --theme-colour-shadow: #25752533;
 }
 
 header {
-    background-color: #21a815;
+    background-color: var(--theme-colour);
     box-shadow: rgba(0,0,0,0.1) 0 0px 10px;
     color: white;
     margin: -8px;
@@ -25,7 +30,7 @@ header small {
 }
 
 a {
-    color: #135f0c;
+    color: var(--theme-colour-darker);
     text-decoration: none;
 }
 
@@ -72,7 +77,7 @@ input {
 
 input[type=text] {
     border-radius: 5px;
-    border: 1px solid #4c7748;
+    border: 1px solid var(--theme-colour-darker);
     box-shadow: 0px 2px 5px rgba(0,0,0,0.2) inset;
     color: #222;
     font-family: sans-serif;
@@ -83,10 +88,10 @@ input[type=text] {
 }
 
 button, input[type=submit] {
-    background-color: #21a815;
+    background-color: var(--theme-colour);
     border-radius: 5px;
     border: none;
-    box-shadow: 0 5px 5px #25752533;
+    box-shadow: 0 5px 5px var(--theme-colour-shadow);
     color: white;
     cursor: pointer;
     display: block;
@@ -98,7 +103,7 @@ button, input[type=submit] {
 }
 
 button:enabled:hover, input[type=submit]:hover {
-    background-color: #46af3c;
+    background-color: var(--theme-colour-hover);
 }
 
 button:disabled {
@@ -107,8 +112,8 @@ button:disabled {
 }
 
 input:focus, button:focus {
-    border-color: #21a815;
-    box-shadow: #21a815 0 0 10px;
+    border-color: var(--theme-colour);
+    box-shadow: var(--theme-colour) 0 0 10px;
 }
 
 #player-view {

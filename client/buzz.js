@@ -227,6 +227,17 @@ socket.on('measure-ping', callback => {
     callback();
 });
 
+socket.on('message', data => {
+    const messageDiv = document.getElementById('message-banner');
+    if (data.message) {
+        messageDiv.classList.remove('hidden');
+        messageDiv.innerText = data.message;
+    } else {
+        messageDiv.classList.add('hidden');
+        messageDiv.innerText = '';
+    }
+});
+
 socket.on('latency-update', data => {
     const element = document.getElementById('latency-warning');
     if (data.ping > 500) {

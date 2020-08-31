@@ -12,7 +12,7 @@ Uses a Node.js backend with Express and Socket.io to manage the players' connect
 
 Create the image either with `make build`, `docker build -t buzzer_app .` or `docker-compose build`.
 
-Run with `docker run -it --rm -p 8080:8080 buzzer_app` or `docker-compose up`.
+Run with `docker run -it --rm -p 8080:8080 -v ./message/:/usr/src/app/message/ buzzer_app` or `docker-compose up`.
 
 ### Without Docker
 
@@ -39,3 +39,7 @@ location /socket.io/ {
 ```
 
 Configuration adapted from the [Nginx blog](https://www.nginx.com/blog/websocket-nginx/).
+
+### Broadcast message
+
+To send a message to all connected players (e.g. to warn of upcoming maintenance), edit the file `message/message.txt`. It will be sent to all players within a minute.

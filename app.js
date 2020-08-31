@@ -2,9 +2,33 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const fs = require('fs');
 
-server.listen(8080);
+const MESSAGE_LOCATION = 'message/message.txt';
+const PORT = 8080;
+
+server.listen(PORT);
 console.log('App is probably listening on 8080');
+
+let broadcastMessage = null;
+
+function updateBroadcastMessage() {
+    fs.exists(MESSAGE_LOCATION, exists => {
+        if (exists) {
+            fs.readFile(MESSAGE_LOCATION, 'utf-8', (err, text) => {
+                if (err) {
+                    console.log('Cannot load broadcast message:', err);
+                } else {
+                    broadcastMessage = text;
+                }
+            });
+        } else {
+            broadcastMessage = null;
+        }
+    });
+}
+updateBroadcastMessage();
+setInterval(updateBroadcastMessage, 30000);
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/client/index.html');
@@ -113,6 +137,8 @@ const GAMES = {};
 io.on('connection', (socket) => {
     let sessionData = null;
     let latencyChecker = null;
+    let messageSender = null;
+    let sentMessage = null;
 
     function log(message) {
         if (sessionData?.gameId) {
@@ -135,6 +161,17 @@ io.on('connection', (socket) => {
             log(`${sessionData.playerName} latency: ${latency}ms (average ${sessionData.latency}ms)`);
         });
     }
+
+    function sendMessage() {
+        if (sentMessage !== broadcastMessage) {
+            socket.emit('message', {
+                message: broadcastMessage
+            });
+            sentMessage = broadcastMessage;
+        }
+    }
+    sendMessage();
+    messageSender = setInterval(sendMessage, 30000);
 
     log('New connection');
 
@@ -229,6 +266,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         log(`${sessionData?.playerName || (sessionData?.isAdmin ? 'admin' : 'non-player')} has left`);
         clearInterval(latencyChecker);
+        clearInterval(messageSender);
         if (sessionData?.playerName && sessionData?.gameId) {
             if (sessionData.gameId in GAMES) {
                 GAMES[sessionData.gameId].deletePlayer(sessionData.playerName);

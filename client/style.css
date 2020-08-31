@@ -111,6 +111,37 @@ input:focus, button:focus {
     box-shadow: #21a815 0 0 10px;
 }
 
+#player-view {
+    max-width: 50vh;
+    margin: auto;
+}
+
+#latency-warning {
+    position: absolute;
+}
+
+#latency-warning.poor::before {
+    content: '⚠';
+    font-size: 2em;
+}
+
+#latency-warning.poor:hover::after {
+    content: 'Poor quality connection';
+
+    position: absolute;
+    left: 2.5em;
+    bottom: 0.7em;
+    width: auto;
+    white-space: nowrap;
+
+    background-color: #1e1e1e;
+    color: #fff;
+    border-radius: 3px;
+    box-shadow: 1px 1px 5px 0 rgba(0,0,0,0.4);
+    font-size: 14px;
+    padding: 3px 5px;
+}
+
 #buzzer-container {
     display: inline-block;
     height: 80vmin;

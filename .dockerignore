@@ -1,6 +1,7 @@
 node_modules
 npm-debug.log
-buzzer.tar.gz
+*.tar.gz
+*.bat
 .node-version
 .vscode
 .gitignore

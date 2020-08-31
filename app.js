@@ -104,7 +104,7 @@ class SessionData {
 
     addLatency(value) {
         this.#latency.push(value);
-        this.#latency = this.#latency.splice(-5);
+        this.#latency = this.#latency.splice(-3);
     }
 }
 
@@ -125,8 +125,13 @@ io.on('connection', (socket) => {
     function measureLatency() {
         const ping = Date.now();
         socket.emit('measure-ping', () => {
-            const latency = (Date.now() - ping) / 2;
-            sessionData.addLatency(latency); // Divide by 2 because I only want the latency of one direction
+            let latency = (Date.now() - ping) / 2; // Divide by 2 because I only want the latency of one direction
+            socket.emit('latency-update', { ping: latency });
+            if (latency > 500) {
+                log(`${sessionData.playerName} latency: ${latency}ms (too high!)`);
+                latency = 500;
+            }
+            sessionData.addLatency(latency);
             log(`${sessionData.playerName} latency: ${latency}ms (average ${sessionData.latency}ms)`);
         });
     }

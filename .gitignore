@@ -116,3 +116,4 @@ dist
 
 # Project-specific
 *.tar.gz
+*.bat

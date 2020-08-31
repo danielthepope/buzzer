@@ -227,6 +227,15 @@ socket.on('measure-ping', callback => {
     callback();
 });
 
+socket.on('latency-update', data => {
+    const element = document.getElementById('latency-warning');
+    if (data.ping > 500) {
+        element.classList.add('poor');
+    } else {
+        element.classList.remove('poor');
+    }
+});
+
 socket.on('game-created', data => {
     setupAdmin(data.gameId);
 });

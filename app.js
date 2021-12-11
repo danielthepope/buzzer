@@ -269,9 +269,9 @@ io.on('connection', (socket) => {
         clearInterval(messageSender);
         if (sessionData?.playerName && sessionData?.gameId) {
             if (sessionData.gameId in GAMES) {
-                GAMES[sessionData.gameId].deletePlayer(sessionData.playerName);
-                GAMES[sessionData.gameId].updatePlayerList();
-                GAMES[sessionData.gameId].broadcast.emit('admin-message', { message: `${sessionData.playerName} has left` });
+                GAMES[sessionData.gameId]?.deletePlayer(sessionData.playerName);
+                GAMES[sessionData.gameId]?.updatePlayerList();
+                GAMES[sessionData.gameId]?.broadcast.emit('admin-message', { message: `${sessionData.playerName} has left` });
             }
         }
         if (sessionData?.isAdmin) {

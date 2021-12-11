@@ -29,7 +29,7 @@ let isInGame = false;
 
 function confirmExit() {
     if (isInGame && !confirm('Are you sure you want to quit?')) {
-        return;
+        return false;
     }
     window.location.reload();
     return false;

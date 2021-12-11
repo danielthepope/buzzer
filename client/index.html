@@ -54,11 +54,14 @@
             <p>When a player buzzes in, they will freeze out everyone else's buttons. Admins can freeze the buzzed
                 player (unfreezing everyone else), or reset everyone's buzzers.</p>
             <p>Buzzer.mobi features latency correction, so users on slow connections are not negatively impacted.</p>
+            <h2>Feedback</h2>
+            <p>Comments or questions? Send an email to <strong>feedback at buzzer dot mobi</strong>.</p>
+            <p>If you've found Buzzer.mobi helpful and you'd like to donate some money towards hosting costs, feel free to <a href="https://www.buymeacoffee.com/danielthepope">Buy Me a Coffee</a>.</p>
         </div>
 
         <footer>
             <hr>
-            <p>Buzzer.mobi is a side project by <a href="https://twitter.com/danielthepope">@danielthepope</a>.</p>
+            <p>Buzzer.mobi is an <a href="https://github.com/danielthepope/buzzer">open source project</a> by <a href="https://twitter.com/danielthepope">@danielthepope</a>.</p>
         </footer>
     </div>
 
@@ -96,12 +99,10 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then((reg) => {
-                    // registration worked
                     console.log('Service worker registration succeeded. Scope is ' + reg.scope);
                 }).catch((error) => {
-                    // registration failed
                     console.log('Service worker registration failed with ' + error);
-                });;
+                });
         }
     </script>
 </body>

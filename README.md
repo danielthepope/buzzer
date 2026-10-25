@@ -16,7 +16,7 @@ Run with `docker run -it --rm -p 8080:8080 -v ./message/:/usr/src/app/message/ b
 
 ### Without Docker
 
-Requires Node.js and NPM to be installed. This has been built and tested with Node 16.
+Requires Node.js 26 and NPM to be installed. This has been built and tested with Node 26.
 
 `npm install` to install the dependencies, then `npm start` to run. It will listen on port 8080.
 

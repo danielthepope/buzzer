@@ -13,20 +13,15 @@ console.log('App is probably listening on 8080');
 let broadcastMessage = null;
 
 function updateBroadcastMessage() {
-    fs.exists(MESSAGE_LOCATION, exists => {
-        if (exists) {
-            fs.readFile(MESSAGE_LOCATION, 'utf-8', (err, text) => {
-                if (err) {
-                    console.log('Cannot load broadcast message:', err);
-                } else {
-                    broadcastMessage = text;
-                }
-            });
+    fs.readFile(MESSAGE_LOCATION, 'utf-8', (err, text) => {
+        if (err) {
+            console.log('Cannot load broadcast message:', err);
         } else {
-            broadcastMessage = null;
+            broadcastMessage = text;
         }
     });
 }
+
 updateBroadcastMessage();
 setInterval(updateBroadcastMessage, 30000);
 

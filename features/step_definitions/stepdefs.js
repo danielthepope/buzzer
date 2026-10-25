@@ -4,8 +4,7 @@ const { Builder, By, Key, until } = require('selenium-webdriver');
 const { sleep } = require('../support/env');
 
 const BROWSER = 'firefox';
-const ENDPOINT = 'http://localhost:8080';
-// const ENDPOINT = 'https://buzzer.dpope.uk';
+const ENDPOINT = () => process.env.TEST_ENDPOINT || 'http://localhost:8080';
 
 Given('an app instance called {string}', { timeout: 10000 }, async function (name) {
     if (this.instances === undefined) {
@@ -13,7 +12,7 @@ Given('an app instance called {string}', { timeout: 10000 }, async function (nam
     }
     let driver = await new Builder().forBrowser(BROWSER).build();
     this.instances[name] = driver;
-    await driver.get(ENDPOINT);
+    await driver.get(ENDPOINT());
 });
 
 When('{string} clicks the {string} button', async function (name, id) {

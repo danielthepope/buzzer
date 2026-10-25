@@ -24,7 +24,9 @@ Requires Node.js 26 and NPM to be installed. This has been built and tested with
 
 Behaviour tests have been written for the basic functionality of the app.
 
-First, run the app with `npm start`, then in a separate terminal, run `npm run test`.
+Run `npm run test`.
+
+Firefox must be installed for the browser-based tests. Download [geckodriver](https://github.com/mozilla/geckodriver/releases/) and place the executable somewhere in your PATH.
 
 ## Deployment
 

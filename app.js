@@ -5,10 +5,15 @@ const io = require('socket.io')(server);
 const fs = require('fs');
 
 const MESSAGE_LOCATION = 'message/message.txt';
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
-server.listen(PORT);
-console.log('App is probably listening on 8080');
+server.listen(PORT, () => {
+    const address = server.address();
+    console.log(`App is listening on ${address.port}`);
+    if (process.send) {
+        process.send({ type: 'listening', port: address.port });
+    }
+});
 
 let broadcastMessage = null;
 
